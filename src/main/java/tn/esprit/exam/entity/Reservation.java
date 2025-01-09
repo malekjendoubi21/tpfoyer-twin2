@@ -27,7 +27,8 @@ public class Reservation {
 
     Date finAnneeUnive;
 
-    boolean estValide;
+    boolean estValide ;
+            //= true;
 
     @ManyToMany(cascade = CascadeType.ALL)
      Set<Etudiant> etudiants;

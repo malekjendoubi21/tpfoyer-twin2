@@ -10,6 +10,7 @@ import tn.esprit.exam.entity.TypeChambre;
 
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 
 @Repository
 public interface ChambreRepository extends JpaRepository<Chambre, Long> {
@@ -23,5 +24,15 @@ public interface ChambreRepository extends JpaRepository<Chambre, Long> {
             "AND c.idChambre NOT IN (SELECT r.chambre.idChambre FROM Reservation r WHERE r.dateAnneeUniv BETWEEN :debutAnnee AND :finAnnee)")
     List<Chambre> findChambresNonReserveParNomFoyerEtType(
             String nomFoyer, TypeChambre typeChambre, Date debutAnnee, Date finAnnee);
+
+
+    @Query("SELECT c FROM Chambre c WHERE c.bloc.nomBloc = :nomBloc AND c.reservations IS EMPTY")
+    List<Chambre> findAvailableChambresByBlocName(@Param("nomBloc") String nomBloc);
+
+    @Query("SELECT c, COUNT(r.etudiants) FROM Chambre c JOIN c.reservations r GROUP BY c")
+    List<Object[]> countEtudiantsByChambre();
+    @Query("SELECT c FROM Chambre c WHERE c.bloc.idBloc = :blocId AND NOT EXISTS (SELECT r FROM c.reservations r WHERE r.estValide = true)")
+    List<Chambre> findAvailableChambresByBloc(@Param("blocId") long blocId);
+
 }
 
